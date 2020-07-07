@@ -1,0 +1,257 @@
+openapi: 3.0.0
+info:
+  title: Laravel Sample
+  description: Laravel Sample API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /currency:
+    get:
+      summary: 取得所有貨幣匯率資料
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/currencyList'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+      tags:
+        - Currency
+    post:
+      summary: 新增貨幣匯率資料
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateCurrency'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/currencyList'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+      tags:
+        - Currency
+  /currency/{id}:
+    get:
+      summary: 取得單筆貨幣匯率資料
+      parameters:
+        - name: id
+          in: path
+          description: currency id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/currency'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+      tags:
+        - Currency
+    patch:
+      summary: 修改單筆貨幣匯率資料
+      parameters:
+        - name: id
+          in: path
+          description: currency id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateCurrency'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: success message
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+      tags:
+        - Currency
+    delete:
+      summary: 刪除單筆貨幣匯率資料
+      parameters:
+        - name: id
+          in: path
+          description: currency id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: success message
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponses'
+      tags:
+        - Currency
+components:
+  schemas:
+    errorResponses:
+      type: object
+      properties:
+        error:
+          type: string
+          description: error message
+    currencyList:
+      type: array
+      items:
+        $ref: '#/components/schemas/currency'
+    currency:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: currency id
+        name:
+          type: string
+          description: currency name
+        iso_code:
+          type: string
+          description: currency 代碼
+        exchange_rate:
+          description: 匯率資訊
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: 匯率類型
+              selling_rate:
+                type: string
+                description: 賣出匯率
+              buying_rate:
+                type: string
+                description: 買入匯率
+    updateCurrency:
+      type: object
+      properties:
+        name:
+          type: string
+          description: currency name
+        iso_code:
+          type: string
+          description: currency 代碼
+        exchange_rate:
+          description: 匯率資訊
+          type: array
+          items:
+            type: object
+            properties:
+              rate_type_id:
+                type: string
+                description: 匯率類型 ID
+              selling_rate:
+                type: string
+                description: 賣出匯率
+              buying_rate:
+                type: string
+                description: 買入匯率
