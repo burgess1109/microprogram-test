@@ -21,9 +21,9 @@ class UpdateAction extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'string|max:20',
             'iso_code' => 'string|max:5|',
-            'exchange_rate.*.rate_type_id' => 'integer',
-            'exchange_rate.*.selling_rate' => 'required_with:exchange_rate.*.rate_type_id|numeric',
-            'exchange_rate.*.buying_rate' => 'required_with:exchange_rate.*.rate_type_id|numeric',
+            'exchange_rate.*.rate_type_id' => 'required_with:exchange_rate.*.selling_rate,exchange_rate.*.buying_rate|integer',
+            'exchange_rate.*.selling_rate' => 'numeric',
+            'exchange_rate.*.buying_rate' => 'numeric',
         ]);
 
         if ($validator->fails()) {

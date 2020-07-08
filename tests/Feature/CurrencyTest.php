@@ -6,6 +6,7 @@ use App\Currency;
 use App\ExchangeRate;
 use App\RateType;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class CurrencyTest extends TestCase
@@ -110,5 +111,133 @@ class CurrencyTest extends TestCase
         $exchangeRate = factory(ExchangeRate::class)->create();
         $this->delete('/currency/' . $exchangeRate->currency_id);
         $this->assertDeleted($exchangeRate);
+    }
+
+    /**
+     * @dataProvider emptyRequiredInputProvider
+     * @dataProvider invalidInputProvider
+     * @param $invalidInput
+     */
+    public function testStoreActionValidation($invalidInput)
+    {
+        $response = $this->post('/currency', $invalidInput);
+        $response->assertStatus(400)->assertJsonStructure(['error']);
+    }
+
+    /**
+     * @dataProvider invalidInputProvider
+     * @param $invalidInput
+     */
+    public function testUpdateActionValidation($invalidInput)
+    {
+        $response = $this->patch('/currency/1', $invalidInput);
+        $response->assertStatus(400)->assertJsonStructure(['error']);
+    }
+
+    public function emptyRequiredInputProvider()
+    {
+        return [
+            'empty input' => [['']],
+            'no required field' => [['xxx' => 'test', 'names' => 'test', 'isoCode' => 'TEST']],
+            'no iso_code' => [['name' => 'test']],
+            'no name' => [['iso_code' => 'TEST']],
+        ];
+    }
+
+    public function invalidInputProvider()
+    {
+        return [
+            'length of iso_code is over 5' => [['name' => 'test', 'iso_code' => Str::random(6)]],
+            'length of name is over 5' => [['name' => Str::random(21), 'iso_code' => 'TEST']],
+            'no rate_type_id if has selling_rate' => [
+                [
+                    'name' => 'test',
+                    'iso_code' => 'TEST',
+                    'exchange_rate' => [
+                        [
+                            'selling_rate' => 1.11
+                        ]
+
+                    ]
+                ]
+            ],
+            'no rate_type_id if has buying_rate' => [
+                [
+                    'name' => 'test',
+                    'iso_code' => 'TEST',
+                    'exchange_rate' => [
+                        [
+                            'buying_rate' => 1.11
+                        ]
+
+                    ]
+                ]
+            ],
+            'no rate_type_id if has selling_rate & buying_rate' => [
+                [
+                    'name' => 'test',
+                    'iso_code' => 'TEST',
+                    'exchange_rate' => [
+                        [
+                            'selling_rate' => 1.11,
+                            'buying_rate' => 1.11
+                        ]
+
+                    ]
+                ]
+            ],
+            'rate_type_id is string not integer' => [
+                [
+                    'name' => 'test',
+                    'iso_code' => 'TEST',
+                    'exchange_rate' => [
+                        [
+                            'rate_type_id' => 'abc',
+                            'selling_rate' => 1.11,
+                            'buying_rate' => 1.11
+                        ]
+                    ]
+                ]
+            ],
+            'rate_type_id is float not integer' => [
+                [
+                    'name' => 'test',
+                    'iso_code' => 'TEST',
+                    'exchange_rate' => [
+                        [
+                            'rate_type_id' => 1.23,
+                            'selling_rate' => 1.11,
+                            'buying_rate' => 1.11
+                        ]
+                    ]
+                ]
+            ],
+            'selling_rate is not number' => [
+                [
+                    'name' => 'test',
+                    'iso_code' => 'TEST',
+                    'exchange_rate' => [
+                        [
+                            'rate_type_id' => 1,
+                            'selling_rate' => 'abc',
+                            'buying_rate' => 1.11
+                        ]
+                    ]
+                ]
+            ],
+            'buying_rate is not number' => [
+                [
+                    'name' => 'test',
+                    'iso_code' => 'TEST',
+                    'exchange_rate' => [
+                        [
+                            'rate_type_id' => 1,
+                            'selling_rate' => 1.11,
+                            'buying_rate' => 'abc'
+                        ]
+                    ]
+                ]
+            ],
+        ];
     }
 }
