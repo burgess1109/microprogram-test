@@ -26,9 +26,7 @@
 
     `docker-compose exec php-fpm php artisan migrate:fresh --seed`
 
-- 測試
-
-    call http://localhost:8080/currency 
+- 設定完成至 http://localhost:8080 可看到 Laravel 頁面
 
 ## 其他指令
 
