@@ -21,7 +21,8 @@ class StoreAction extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:20',
             'iso_code' => 'required|string|max:5',
-            'exchange_rate.*.rate_type_id' => 'required_with:exchange_rate.*.selling_rate,exchange_rate.*.buying_rate|integer',
+            'exchange_rate.*.rate_type_id' =>
+                'required_with:exchange_rate.*.selling_rate,exchange_rate.*.buying_rate|integer',
             'exchange_rate.*.selling_rate' => 'numeric',
             'exchange_rate.*.buying_rate' => 'numeric',
         ]);
