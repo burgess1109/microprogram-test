@@ -40,5 +40,7 @@
 
 ## API 規格
 
-詳 [openapi.yml](./openapi.yml)
+![Demo](./demo.png)
+
+詳細規格請參考 [openapi.yml](./openapi.yml)
  
